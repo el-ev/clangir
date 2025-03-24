@@ -7149,7 +7149,6 @@ void CodeGenModule::EmitTopLevelDecl(Decl *D) {
   case Decl::ObjCCompatibleAlias:
     ObjCRuntime->RegisterAlias(cast<ObjCCompatibleAliasDecl>(D));
     break;
-
   case Decl::PragmaComment: {
     const auto *PCD = cast<PragmaCommentDecl>(D);
     switch (PCD->getCommentKind()) {
@@ -7159,7 +7158,7 @@ void CodeGenModule::EmitTopLevelDecl(Decl *D) {
       AppendLinkerOptions(PCD->getArg());
       break;
     case PCK_Lib:
-        AddDependentLib(PCD->getArg());
+      AddDependentLib(PCD->getArg());
       break;
     case PCK_Compiler:
     case PCK_ExeStr:
