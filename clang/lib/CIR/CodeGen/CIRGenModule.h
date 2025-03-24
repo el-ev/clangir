@@ -42,6 +42,7 @@
 #include "mlir/Dialect/Func/IR/FuncOps.h"
 #include "mlir/Dialect/LLVMIR/LLVMAttrs.h"
 #include "mlir/IR/Builders.h"
+#include "mlir/IR/BuiltinAttributes.h"
 #include "mlir/IR/BuiltinOps.h"
 #include "mlir/IR/MLIRContext.h"
 #include "mlir/IR/Value.h"
@@ -153,6 +154,9 @@ private:
 
   llvm::DenseMap<const Expr *, mlir::Operation *>
       materializedGlobalTemporaryMap;
+
+  /// A vector of metadata strings for dependent libraries for ELF.
+  SmallVector<mlir::StringAttr, 16> ELFDependentLibraries;
 
 public:
   mlir::ModuleOp getModule() const { return theModule; }
@@ -952,6 +956,9 @@ private:
   /// Add global annotations for a global value.
   /// Those annotations are emitted during lowering to the LLVM code.
   void addGlobalAnnotations(const ValueDecl *d, mlir::Operation *gv);
+
+  /// Appends a dependent lib to the appropriate metadata value.
+  void AddDependentLib(StringRef Lib); 
 };
 } // namespace clang::CIRGen
 

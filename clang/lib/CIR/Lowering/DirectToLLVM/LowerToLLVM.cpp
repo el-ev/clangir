@@ -4691,6 +4691,9 @@ void ConvertCIRToLLVMPass::processCIRAttrs(mlir::ModuleOp module) {
   if (auto tripleAttr = module->getAttr(cir::CIRDialect::getTripleAttrName()))
     module->setAttr(mlir::LLVM::LLVMDialect::getTargetTripleAttrName(),
                     tripleAttr);
+  if (auto dependentLibariesAttr =
+          module->getAttr(cir::CIRDialect::getDependentLibrariesAttrName()))
+    module->setAttr("llvm.dependent-libraries",dependentLibariesAttr);
 
   // Strip the CIR attributes.
   module->removeAttr(cir::CIRDialect::getSOBAttrName());

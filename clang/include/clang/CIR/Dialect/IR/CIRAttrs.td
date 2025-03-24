@@ -1407,6 +1407,15 @@ def GlobalAnnotationValuesAttr : CIR_Attr<"GlobalAnnotationValues",
   let genVerifyDecl = 1;
 }
 
+def DependentLibrariesAttr : CIR_Attr<"DependentLibraries", "dependent_libraries"> {
+  let summary = "";
+  let description = [{}];
+
+  let parameters = (ins "mlir::ArrayAttr":$libs);
+
+  let assemblyFormat = [{ $libs }];
+}
+
 include "clang/CIR/Dialect/IR/CIRTBAAAttrs.td"
 
 include "clang/CIR/Dialect/IR/CIROpenCLAttrs.td"

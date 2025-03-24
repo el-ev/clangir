@@ -2045,6 +2045,7 @@ void CIRGenModule::emitTopLevelDecl(Decl *decl) {
         break;
       case PCK_Lib:
         assert(!MissingFeatures::elfDependentLibraries() && "NYI");
+        AddDependentLib(PCD->getArg());
         break;
       case PCK_Compiler:
       case PCK_ExeStr:
@@ -3410,6 +3411,15 @@ void CIRGenModule::Release() {
   // usage of #pragma comment(lib, *) is intended for host libraries on
   // Windows. Therefore emit llvm.dependent-libraries only for host.
   assert(!MissingFeatures::elfDependentLibraries());
+  if (!ELFDependentLibraries.empty() && !astContext.getLangOpts().CUDAIsDevice) {
+    llvm::SmallVector<mlir::Attribute, 16> args;
+    for (auto Lib : ELFDependentLibraries) {
+      args.push_back(Lib);
+    }
+    mlir::ArrayAttr DLArray = builder.getArrayAttr(args);
+    theModule->setAttr(cir::CIRDialect::getDependentLibrariesAttrName(),
+                       DLArray);
+  }
 
   assert(!MissingFeatures::dwarfVersion());
 
@@ -4227,6 +4237,17 @@ void CIRGenModule::emitGlobalAnnotations() {
       addGlobalAnnotations(vd, gv);
   }
   deferredAnnotations.clear();
+}
+
+void CIRGenModule::AddDependentLib(StringRef Lib) {
+    if (getTarget().getTriple().isOSBinFormatELF()) {
+      ELFDependentLibraries.push_back(
+        builder.getStringAttr(Lib)
+      );
+    return;
+    }
+    assert(!MissingFeatures::elfDependentLibraries() && "NYI");
+    // getTargetCodeGenInfo().getDependentLibraryOption(Lib, Opt);
 }
 
 cir::TBAAAttr CIRGenModule::getTBAATypeInfo(QualType qTy) {
